@@ -59,10 +59,10 @@ AWS Cloud
     |
     +-- Subnet (172.31.16.0/20)  <-- Availability zone subset
     |   |
-    |   +-- jumpbox (172.31.16.36)
-    |   +-- server (172.31.20.244)
-    |   +-- node-1 (172.31.19.88)
-    |   +-- node-2 (172.31.25.215)
+    |   +-- jumpbox (<JUMPBOX_PRIVATE_IP>)
+    |   +-- server (<SERVER_PRIVATE_IP>)
+    |   +-- node-1 (<NODE_1_PRIVATE_IP>)
+    |   +-- node-2 (<NODE_2_PRIVATE_IP>)
     |
     +-- Internet Gateway  <-- Connects VPC to internet
     |
@@ -201,18 +201,18 @@ Larger instances cost more. For learning:
 ```
 Internet
     |
-    | SSH to 32.199.185.61
+    | SSH to <JUMPBOX_PUBLIC_IP>
     v
 +---------------+
 |   jumpbox     |
-| 172.31.16.36  |
+| <JUMPBOX_PRIVATE_IP>  |
 +---------------+
     |
-    | SSH to 172.31.20.244 (private)
+    | SSH to <SERVER_PRIVATE_IP> (private)
     v
 +---------------+
 |    server     |
-| 172.31.20.244 |
+| <SERVER_PRIVATE_IP> |
 +---------------+
 ```
 

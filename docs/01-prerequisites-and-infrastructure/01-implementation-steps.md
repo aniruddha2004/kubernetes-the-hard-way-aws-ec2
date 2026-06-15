@@ -34,10 +34,10 @@ Before bootstrapping Kubernetes, we must:
 
 | Name | Purpose | Instance Type | Private IP | Public IP |
 |------|---------|---------------|------------|-----------|
-| `jumpbox` | Administration host | t3.micro | 172.31.16.36 | 32.199.185.61 |
-| `server` | Kubernetes control plane | t3.small | 172.31.20.244 | None |
-| `node-1` | Worker node 1 | t3.small | 172.31.19.88 | None |
-| `node-2` | Worker node 2 | t3.small | 172.31.25.215 | None |
+| `jumpbox` | Administration host | t3.micro | <JUMPBOX_PRIVATE_IP> | <JUMPBOX_PUBLIC_IP> |
+| `server` | Kubernetes control plane | t3.small | <SERVER_PRIVATE_IP> | None |
+| `node-1` | Worker node 1 | t3.small | <NODE_1_PRIVATE_IP> | None |
+| `node-2` | Worker node 2 | t3.small | <NODE_2_PRIVATE_IP> | None |
 
 > **Important**: All instances must be in the same VPC and subnet with private connectivity between all nodes. Worker nodes do not have public IPs.
 
@@ -66,7 +66,7 @@ Provision four Debian-based EC2 instances with the following specifications:
 | **OS** | Debian 12 (Bookworm) | Debian 12 | Debian 12 |
 | **Architecture** | x86_64 | x86_64 | x86_64 |
 | **AMI** | ami-0b75f821522bcff85 | ami-0b75f821522bcff85 | ami-0b75f821522bcff85 |
-| **Key Pair** | ani-key | ani-key | ani-key |
+| **Key Pair** | <YOUR_KEY_PAIR> | <YOUR_KEY_PAIR> | <YOUR_KEY_PAIR> |
 | **Public IP** | Yes | No | No |
 
 ### Security Group Requirements
@@ -100,7 +100,7 @@ Refer to `../appendix-aws-infrastructure/` for exact AWS resource specifications
 From your local machine:
 
 ```bash
-ssh -i ani-key.pem admin@32.199.185.61
+ssh -i <YOUR_KEY_PAIR>.pem admin@<JUMPBOX_PUBLIC_IP>
 ```
 
 Expected output:
@@ -313,9 +313,9 @@ Create `machines.txt` as the single source of truth for all cluster nodes:
 
 ```bash
 cat > machines.txt <<EOF
-172.31.20.244 server.kubernetes.local server
-172.31.19.88 node-1.kubernetes.local node-1 10.200.0.0/24
-172.31.25.215 node-2.kubernetes.local node-2 10.200.1.0/24
+<SERVER_PRIVATE_IP> server.kubernetes.local server
+<NODE_1_PRIVATE_IP> node-1.kubernetes.local node-1 10.200.0.0/24
+<NODE_2_PRIVATE_IP> node-2.kubernetes.local node-2 10.200.1.0/24
 EOF
 ```
 
@@ -337,12 +337,12 @@ The **fourth column** (POD_SUBNET) is used later when assigning Pod CIDR ranges 
 From your local machine, copy the `.pem` key:
 
 ```bash
-scp -i ani-key.pem ani-key.pem admin@32.199.185.61:~/kubernetes-the-hard-way/
+scp -i <YOUR_KEY_PAIR>.pem <YOUR_KEY_PAIR>.pem admin@<JUMPBOX_PUBLIC_IP>:~/kubernetes-the-hard-way/
 ```
 
 On the jumpbox, set restrictive permissions:
 ```bash
-chmod 400 ~/kubernetes-the-hard-way/ani-key.pem
+chmod 400 ~/kubernetes-the-hard-way/<YOUR_KEY_PAIR>.pem
 ```
 
 ### Create SSH Config File
@@ -352,19 +352,19 @@ Create `~/.ssh/config` for easy passwordless SSH:
 ```bash
 cat > ~/.ssh/config <<EOF
 Host server
-    HostName 172.31.20.244
+    HostName <SERVER_PRIVATE_IP>
     User admin
-    IdentityFile ~/.ssh/ani-key.pem
+    IdentityFile ~/.ssh/<YOUR_KEY_PAIR>.pem
 
 Host node-1
-    HostName 172.31.19.88
+    HostName <NODE_1_PRIVATE_IP>
     User admin
-    IdentityFile ~/.ssh/ani-key.pem
+    IdentityFile ~/.ssh/<YOUR_KEY_PAIR>.pem
 
 Host node-2
-    HostName 172.31.25.215
+    HostName <NODE_2_PRIVATE_IP>
     User admin
-    IdentityFile ~/.ssh/ani-key.pem
+    IdentityFile ~/.ssh/<YOUR_KEY_PAIR>.pem
 EOF
 ```
 
@@ -390,7 +390,7 @@ ssh node-2
 
 On first connection, accept the host key:
 ```
-The authenticity of host '172.31.20.244 (172.31.20.244)' can't be established.
+The authenticity of host '<SERVER_PRIVATE_IP> (<SERVER_PRIVATE_IP>)' can't be established.
 ED25519 key fingerprint is SHA256:9sc/csAnZT3VAQd+fMDbmf4H2stfkTU9oslQZNBUNh4.
 Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
 ```
@@ -459,9 +459,9 @@ Output:
 ```
 
 # Kubernetes The Hard Way
-172.31.20.244 server.kubernetes.local server
-172.31.19.88 node-1.kubernetes.local node-1
-172.31.25.215 node-2.kubernetes.local node-2
+<SERVER_PRIVATE_IP> server.kubernetes.local server
+<NODE_1_PRIVATE_IP> node-1.kubernetes.local node-1
+<NODE_2_PRIVATE_IP> node-2.kubernetes.local node-2
 ```
 
 ### Distribute to Jumpbox
@@ -503,7 +503,7 @@ ping -c 1 node-2
 
 Expected:
 ```
-64 bytes from server.kubernetes.local (172.31.20.244): icmp_seq=1 ttl=64 time=0.239 ms
+64 bytes from server.kubernetes.local (<SERVER_PRIVATE_IP>): icmp_seq=1 ttl=64 time=0.239 ms
 ```
 
 Test from server to workers:
@@ -513,7 +513,7 @@ ssh server "ping -c 1 node-1"
 
 Expected:
 ```
-64 bytes from node-1.kubernetes.local (172.31.19.88): icmp_seq=1 ttl=64 time=0.202 ms
+64 bytes from node-1.kubernetes.local (<NODE_1_PRIVATE_IP>): icmp_seq=1 ttl=64 time=0.202 ms
 ```
 
 ---

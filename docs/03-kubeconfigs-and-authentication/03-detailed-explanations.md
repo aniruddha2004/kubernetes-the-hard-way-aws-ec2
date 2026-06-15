@@ -136,13 +136,13 @@ kubectl get pods
 +--------------------------------+
 | Resolve server address         |
 | server.kubernetes.local        |
-|   -> 172.31.20.244             |
+|   -> <SERVER_PRIVATE_IP>             |
 +--------------------------------+
      |
      v
 +--------------------------------+
 | TLS Handshake                  |
-| 1. Connect to 172.31.20.244:6443|
+| 1. Connect to <SERVER_PRIVATE_IP>:6443|
 | 2. Verify server cert with CA  |
 | 3. Present client cert (admin) |
 | 4. Server verifies with CA     |
@@ -228,7 +228,7 @@ CLIENT                                    SERVER
 PHASE 1: TCP Connection
 -----------------------
 kubectl opens TCP connection to server.kubernetes.local:6443
-  -> Resolves to 172.31.20.244:6443
+  -> Resolves to <SERVER_PRIVATE_IP>:6443
   -> SYN, SYN-ACK, ACK
 
 PHASE 2: TLS Handshake

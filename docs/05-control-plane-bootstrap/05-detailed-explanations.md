@@ -287,7 +287,7 @@ Time:  0s    5s    10s   15s   20s   25s   30s
        [Flags][Store][Conn][Init  ]
 
 Logs you might see:
-  I0614 11:00:00.12345    5678 flags.go:59] FLAG: --advertise-address="172.31.20.244"
+  I0614 11:00:00.12345    5678 flags.go:59] FLAG: --advertise-address="<SERVER_PRIVATE_IP>"
   I0614 11:00:02.23456    5678 client.go:360] parsed scheme: "endpoint"
   I0614 11:00:05.34567    5678 storage_factory.go:285] storing {pods ...} in v1, reading as __internal from etcd3
   I0614 11:00:15.45678    5678 plugins.go:158] Loaded 6 mutating admission controller(s)
@@ -1064,12 +1064,12 @@ Certificate SANs for kubernetes.crt:
   DNS: kubernetes.default.svc.cluster.local
   DNS: server.kubernetes.local
   IP: 10.32.0.1
-  IP: 172.31.20.244
+  IP: <SERVER_PRIVATE_IP>
 ```
 
 Each of these names is valid for connecting to the API server:
 - From inside a pod: `https://kubernetes.default.svc:443`
-- From a node: `https://172.31.20.244:6443`
+- From a node: `https://<SERVER_PRIVATE_IP>:6443`
 - From kubectl: `https://server.kubernetes.local:6443`
 
 ### The Error We Encountered
@@ -1078,20 +1078,20 @@ Each of these names is valid for connecting to the API server:
 
 Initially, the `/etc/hosts` file contained:
 ```
-172.31.20.244 server.ani-kubernetes.local server
+<SERVER_PRIVATE_IP> server.custom-kubernetes.local server
 ```
 
 And the kubeconfig pointed to:
 ```yaml
 clusters:
 - cluster:
-    server: https://server.ani-kubernetes.local:6443
+    server: https://server.custom-kubernetes.local:6443
 ```
 
 But the API server certificate was generated with:
 ```
 DNS: server.kubernetes.local  <- YES
-DNS: server.ani-kubernetes.local  <- NO! Not present.
+DNS: server.custom-kubernetes.local  <- NO! Not present.
 ```
 
 #### The Error Message
@@ -1107,16 +1107,16 @@ Unable to connect to the server: x509: certificate is valid for
   kubernetes.default.svc.cluster,
   kubernetes.default.svc.cluster.local,
   10.32.0.1,
-  172.31.20.244,
-not server.ani-kubernetes.local
+  <SERVER_PRIVATE_IP>,
+not server.custom-kubernetes.local
 ```
 
 #### What TLS Is Telling Us
 
 The Go TLS library (used by kubectl) performs hostname verification:
-1. It extracts the hostname from the URL: `server.ani-kubernetes.local`
+1. It extracts the hostname from the URL: `server.custom-kubernetes.local`
 2. It checks the certificate's SAN list
-3. It finds 8 valid names, none of which match `server.ani-kubernetes.local`
+3. It finds 8 valid names, none of which match `server.custom-kubernetes.local`
 4. It aborts the connection with the x509 error
 
 This is **not a bug** — it is correct security behavior. TLS is doing exactly what it should.
@@ -1133,7 +1133,7 @@ This is **not a bug** — it is correct security behavior. TLS is doing exactly 
 **Option 2 (Match Existing Certificate)** — What we did:
 ```bash
 # Update /etc/hosts to use the name in the certificate
-sudo sed -i 's/server.ani-kubernetes.local/server.kubernetes.local/' /etc/hosts
+sudo sed -i 's/server.custom-kubernetes.local/server.kubernetes.local/' /etc/hosts
 
 # Update kubeconfigs
 kubectl config set-cluster kubernetes-the-hard-way \
@@ -1150,10 +1150,10 @@ When generating the API server certificate in Step 2, include EVERY possible way
 | Connection Source | Hostname/IP to Include |
 |-------------------|------------------------|
 | kubectl from jumpbox | `server.kubernetes.local` |
-| kubectl from nodes | `server.kubernetes.local` or `172.31.20.244` |
+| kubectl from nodes | `server.kubernetes.local` or `<SERVER_PRIVATE_IP>` |
 | Pods via Service | `kubernetes.default.svc.cluster.local` |
 | Service ClusterIP | `10.32.0.1` |
-| Direct IP | `172.31.20.244` |
+| Direct IP | `<SERVER_PRIVATE_IP>` |
 | Internal DNS | `kubernetes`, `kubernetes.default` |
 
 ### Disabling Verification (DANGEROUS — Never Do This)
@@ -1327,7 +1327,7 @@ Enabled by these flags:
     "username": "admin",
     "groups": ["system:masters", "system:authenticated"]
   },
-  "sourceIPs": ["172.31.16.36"],
+  "sourceIPs": ["<JUMPBOX_PRIVATE_IP>"],
   "objectRef": {
     "resource": "pods",
     "namespace": "default",
@@ -1341,7 +1341,7 @@ Enabled by these flags:
 
 This tells us:
 - User `admin` (in group `system:masters`)
-- From IP `172.31.16.36` (the jumpbox)
+- From IP `<JUMPBOX_PRIVATE_IP>` (the jumpbox)
 - Created a pod named `nginx` in namespace `default`
 - At 2026-06-14 11:30:00 UTC
 - The request succeeded (HTTP 201)
@@ -1367,7 +1367,7 @@ Yes! API servers are stateless. Run multiple instances behind a load balancer:
             |    |
      +------+    +------+
      | API Server 1     |
-     | (172.31.20.244)  |
+     | (<SERVER_PRIVATE_IP>)  |
      +------------------+
             |
             | All connect

@@ -52,12 +52,12 @@ Result: Packets to 10.200.1.x sent to default gateway (AWS VPC router)
 node-1 knows:
   - 172.31.16.0/20 (VPC network)
   - 10.200.0.0/24 (local pod CIDR)
-  - 10.200.1.0/24 via 172.31.25.215 (node-2)
+  - 10.200.1.0/24 via <NODE_2_PRIVATE_IP> (node-2)
   
 node-2 knows:
   - 172.31.16.0/20 (VPC network)
   - 10.200.1.0/24 (local pod CIDR)
-  - 10.200.0.0/24 via 172.31.19.88 (node-1)
+  - 10.200.0.0/24 via <NODE_1_PRIVATE_IP> (node-1)
   
 Result: Pod-to-pod communication works!
 ```
@@ -144,16 +144,16 @@ AWS Router:
 ### Adding the Route
 
 ```bash
-ip route add 10.200.1.0/24 via 172.31.25.215
+ip route add 10.200.1.0/24 via <NODE_2_PRIVATE_IP>
 ```
 
-Translation: "To reach 10.200.1.0/24, send packets to 172.31.25.215 (node-2)."
+Translation: "To reach 10.200.1.0/24, send packets to <NODE_2_PRIVATE_IP> (node-2)."
 
 Now the routing table:
 ```
 Destination     Gateway           Iface
 10.200.0.0/24   0.0.0.0           cni0
-10.200.1.0/24   172.31.25.215     eth0   <-- NEW
+10.200.1.0/24   <NODE_2_PRIVATE_IP>     eth0   <-- NEW
 172.31.16.0/20  0.0.0.0           eth0
 0.0.0.0/0       172.31.16.1       eth0
 ```
@@ -191,7 +191,7 @@ Pod A (10.200.0.5)
 +----------------------------------+
 | node-1 routing table             |
 | Matches: 10.200.1.0/24           |
-| Gateway: 172.31.25.215           |
+| Gateway: <NODE_2_PRIVATE_IP>           |
 | Next hop: node-2's eth0          |
 +----------------------------------+
     |
@@ -199,7 +199,7 @@ Pod A (10.200.0.5)
     | Source: 10.200.0.5, Dest: 10.200.1.8
     v
 +----------------------------------+
-| node-2 eth0 (172.31.25.215)      |
+| node-2 eth0 (<NODE_2_PRIVATE_IP>)      |
 | Receives packet                  |
 +----------------------------------+
     |
@@ -332,7 +332,7 @@ Routes added with `ip route` are stored in memory. They disappear:
 ```
 auto eth0
 iface eth0 inet dhcp
-    up ip route add 10.200.1.0/24 via 172.31.25.215
+    up ip route add 10.200.1.0/24 via <NODE_2_PRIVATE_IP>
 ```
 
 **Option 2: systemd oneshot service**
@@ -344,7 +344,7 @@ Wants=network-online.target
 
 [Service]
 Type=oneshot
-ExecStart=/sbin/ip route add 10.200.1.0/24 via 172.31.25.215
+ExecStart=/sbin/ip route add 10.200.1.0/24 via <NODE_2_PRIVATE_IP>
 RemainAfterExit=yes
 
 [Install]
@@ -354,7 +354,7 @@ WantedBy=multi-user.target
 **Option 3: Cloud-init** (for automated provisioning)
 ```yaml
 runcmd:
-  - ip route add 10.200.1.0/24 via 172.31.25.215
+  - ip route add 10.200.1.0/24 via <NODE_2_PRIVATE_IP>
 ```
 
 ### Production Alternative: Overlay Networks

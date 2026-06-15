@@ -595,7 +595,7 @@ Here's what happens when you curl a NodePort:
 User: curl http://node-1:30080
      |
      v
-node-1 eth0 (172.31.19.88)
+node-1 eth0 (<NODE_1_PRIVATE_IP>)
      |
      v
 iptables -t nat -A KUBE-NODEPORTS --dport 30080
@@ -607,13 +607,13 @@ iptables -t nat -A KUBE-SVC-XXX
 iptables -t nat -A KUBE-SEP-YYY -j DNAT --to-destination 10.200.1.8:80
      |
      v
-Kernel routes 10.200.1.8 via node-2 (172.31.25.215)
+Kernel routes 10.200.1.8 via node-2 (<NODE_2_PRIVATE_IP>)
      |
      v
 AWS VPC delivers packet to node-2
      |
      v
-node-2 eth0 (172.31.25.215)
+node-2 eth0 (<NODE_2_PRIVATE_IP>)
      |
      v
 node-2 routing table: 10.200.1.0/24 -> cni0

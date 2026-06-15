@@ -1,0 +1,87 @@
+# ============================================
+# Raw Source Notes (organized into docs/)
+# ============================================
+K8S-AUTHENTICATION-AND-mTLS-DEEP-DIVE.md
+Kubernetes The Hard Way on AWS EC2.txt
+PART-2.md
+
+# ============================================
+# Kubernetes Certificates & Keys (Sensitive!)
+# ============================================
+*.pem
+*.key
+*.crt
+ca.key
+*.csr
+*.srl
+admin-certs/
+kubelet-certs/
+kube-certs/
+kube-api-server/
+service-account/
+ca/
+
+# ============================================
+# Kubernetes Configs (Contain Credentials)
+# ============================================
+*.kubeconfig
+kubeconfig
+kube-proxy.kubeconfig
+kube-controller-manager.kubeconfig
+kube-scheduler.kubeconfig
+admin.kubeconfig
+node-*.kubeconfig
+
+# ============================================
+# Encryption Config (Contains Key Material)
+# ============================================
+encryption-config.yaml
+
+# ============================================
+# Downloaded Binaries
+# ============================================
+downloads/
+worker-debs/
+*.deb
+
+# ============================================
+# AWS Artifacts
+# ============================================
+*.pem
+ani-key.pem
+.terraform/
+terraform.tfstate
+terraform.tfstate.backup
+*.tfvars
+
+# ============================================
+# SSH & System Files
+# ============================================
+.ssh/known_hosts
+.ssh/*.pem
+hosts
+machines.txt
+
+# ============================================
+# Container Images & Archives
+# ============================================
+*.tar
+pause.tar
+*.img
+
+# ============================================
+# Temp / Backup Files
+# ============================================
+*.bak
+*.swp
+*.swo
+*~
+.DS_Store
+*.log
+
+# ============================================
+# IDE / Editor Files
+# ============================================
+.idea/
+.vscode/
+*.iml

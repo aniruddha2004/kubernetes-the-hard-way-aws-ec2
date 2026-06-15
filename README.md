@@ -67,10 +67,10 @@ This AWS EC2 adaptation differs from the original tutorial in the following ways
 
 | Name | Purpose | Instance Type | Private IP |
 |------|---------|---------------|------------|
-| `jumpbox` | Administration / Jump host | t3.micro | 172.31.16.36 |
-| `server` | Kubernetes control plane | t3.small | 172.31.20.244 |
-| `node-1` | Worker node | t3.small | 172.31.19.88 |
-| `node-2` | Worker node | t3.small | 172.31.25.215 |
+| `jumpbox` | Administration / Jump host | t3.micro | <JUMPBOX_PRIVATE_IP> |
+| `server` | Kubernetes control plane | t3.small | <SERVER_PRIVATE_IP> |
+| `node-1` | Worker node | t3.small | <NODE_1_PRIVATE_IP> |
+| `node-2` | Worker node | t3.small | <NODE_2_PRIVATE_IP> |
 
 ## Guide Structure
 

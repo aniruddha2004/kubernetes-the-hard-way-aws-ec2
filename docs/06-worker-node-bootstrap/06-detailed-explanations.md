@@ -247,7 +247,7 @@ When a pod is created, the CNI plugin:
 Host Network Namespace           Pod Network Namespace
 +--------------------+          +--------------------+
 | eth0 (AWS)         |          | eth0 (in pod)      |
-| 172.31.19.88       |          | 10.200.0.5/24      |
+| <NODE_1_PRIVATE_IP>       |          | 10.200.0.5/24      |
 +---------+----------+          +---------+----------+
           |                               |
           |                               |

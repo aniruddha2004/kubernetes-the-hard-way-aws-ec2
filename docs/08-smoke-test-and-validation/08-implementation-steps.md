@@ -453,7 +453,7 @@ For application images (like nginx), either:
 
 **Solution**:
 ```bash
-ssh server "echo '172.31.20.244 server.kubernetes.local server' | sudo tee -a /etc/hosts"
+ssh server "echo '<SERVER_PRIVATE_IP> server.kubernetes.local server' | sudo tee -a /etc/hosts"
 ssh server "sudo systemctl restart kube-controller-manager kube-scheduler"
 ```
 
@@ -465,8 +465,8 @@ ssh server "sudo systemctl restart kube-controller-manager kube-scheduler"
 
 **Solution**:
 ```bash
-ssh node-1 "echo '172.31.20.244 server.kubernetes.local server' | sudo tee -a /etc/hosts"
-ssh node-2 "echo '172.31.20.244 server.kubernetes.local server' | sudo tee -a /etc/hosts"
+ssh node-1 "echo '<SERVER_PRIVATE_IP> server.kubernetes.local server' | sudo tee -a /etc/hosts"
+ssh node-2 "echo '<SERVER_PRIVATE_IP> server.kubernetes.local server' | sudo tee -a /etc/hosts"
 ssh node-1 "sudo systemctl restart kubelet"
 ssh node-2 "sudo systemctl restart kubelet"
 ```

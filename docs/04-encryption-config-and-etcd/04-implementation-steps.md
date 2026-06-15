@@ -158,12 +158,12 @@ ExecStart=/usr/local/bin/etcd \
   --peer-trusted-ca-file=/var/lib/kubernetes/ca.crt \
   --peer-client-cert-auth \
   --client-cert-auth \
-  --initial-advertise-peer-urls https://172.31.20.244:2380 \
-  --listen-peer-urls https://172.31.20.244:2380 \
-  --listen-client-urls https://172.31.20.244:2379,https://127.0.0.1:2379 \
-  --advertise-client-urls https://172.31.20.244:2379 \
+  --initial-advertise-peer-urls https://<SERVER_PRIVATE_IP>:2380 \
+  --listen-peer-urls https://<SERVER_PRIVATE_IP>:2380 \
+  --listen-client-urls https://<SERVER_PRIVATE_IP>:2379,https://127.0.0.1:2379 \
+  --advertise-client-urls https://<SERVER_PRIVATE_IP>:2379 \
   --initial-cluster-token etcd-cluster-0 \
-  --initial-cluster server=https://172.31.20.244:2380 \
+  --initial-cluster server=https://<SERVER_PRIVATE_IP>:2380 \
   --initial-cluster-state new \
   --data-dir=/var/lib/etcd
 Restart=on-failure
@@ -189,7 +189,7 @@ Flags explained:
 - `--initial-cluster-state new` — Initialize a new cluster (vs joining existing)
 - `--data-dir` — Directory for etcd data files
 
-> **Replace `172.31.20.244` with your control plane's actual private IP!**
+> **Replace `<SERVER_PRIVATE_IP>` with your control plane's actual private IP!**
 
 ---
 
@@ -239,15 +239,15 @@ ssh server "ETCDCTL_API=3 etcdctl member list \
 
 Expected output:
 ```
-8e9e05c52164694d, started, server, https://172.31.20.244:2380, https://172.31.20.244:2379
+8e9e05c52164694d, started, server, https://<SERVER_PRIVATE_IP>:2380, https://<SERVER_PRIVATE_IP>:2379
 ```
 
 Fields:
 - `8e9e05c52164694d` — Member ID (hexadecimal)
 - `started` — Member status
 - `server` — Member name
-- `https://172.31.20.244:2380` — Peer URL
-- `https://172.31.20.244:2379` — Client URL
+- `https://<SERVER_PRIVATE_IP>:2380` — Peer URL
+- `https://<SERVER_PRIVATE_IP>:2379` — Client URL
 
 ### Check etcd Health
 

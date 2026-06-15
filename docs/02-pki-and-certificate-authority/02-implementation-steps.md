@@ -263,7 +263,7 @@ DNS.4 = kubernetes.default.svc.cluster
 DNS.5 = kubernetes.default.svc.cluster.local
 DNS.6 = server.kubernetes.local
 IP.1 = 10.32.0.1
-IP.2 = 172.31.20.244
+IP.2 = <SERVER_PRIVATE_IP>
 EOF
 ```
 
@@ -297,7 +297,7 @@ subject=CN = kube-apiserver, O = Kubernetes
 - `kubernetes.default.svc.cluster.local` — Full cluster-local DNS
 - `server.kubernetes.local` — The actual hostname of our API server
 - `10.32.0.1` — The first IP in the service CIDR (reserved for kubernetes.default service)
-- `172.31.20.244` — Private IP of the control plane node
+- `<SERVER_PRIVATE_IP>` — Private IP of the control plane node
 
 ---
 
@@ -444,7 +444,7 @@ openssl x509 -in kube-api-server/kubernetes.crt -text -noout | grep -A 20 "Subje
 Expected:
 ```
             X509v3 Subject Alternative Name:
-                DNS:kubernetes, DNS:kubernetes.default, DNS:kubernetes.default.svc, DNS:kubernetes.default.svc.cluster, DNS:kubernetes.default.svc.cluster.local, DNS:server.kubernetes.local, IP Address:10.32.0.1, IP Address:172.31.20.244
+                DNS:kubernetes, DNS:kubernetes.default, DNS:kubernetes.default.svc, DNS:kubernetes.default.svc.cluster, DNS:kubernetes.default.svc.cluster.local, DNS:server.kubernetes.local, IP Address:10.32.0.1, IP Address:<SERVER_PRIVATE_IP>
 ```
 
 ### Verify Admin Certificate

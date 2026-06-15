@@ -21,10 +21,10 @@
 
 | Name | Instance ID | Type | AMI | Private IP | Public IP | AZ |
 |------|------------|------|-----|------------|-----------|-----|
-| jumpbox | i-0123456789abcdef0 | t3.micro | ami-0b75f821522bcff85 | 172.31.16.36 | 32.199.185.61 | us-east-1a |
-| server | i-0fedcba9876543210 | t3.small | ami-0b75f821522bcff85 | 172.31.20.244 | None | us-east-1a |
-| node-1 | i-0a1b2c3d4e5f6789a | t3.small | ami-0b75f821522bcff85 | 172.31.19.88 | None | us-east-1a |
-| node-2 | i-0b2c3d4e5f6789a1b | t3.small | ami-0b75f821522bcff85 | 172.31.25.215 | None | us-east-1a |
+| jumpbox | i-0123456789abcdef0 | t3.micro | ami-0b75f821522bcff85 | <JUMPBOX_PRIVATE_IP> | <JUMPBOX_PUBLIC_IP> | us-east-1a |
+| server | i-0fedcba9876543210 | t3.small | ami-0b75f821522bcff85 | <SERVER_PRIVATE_IP> | None | us-east-1a |
+| node-1 | i-0a1b2c3d4e5f6789a | t3.small | ami-0b75f821522bcff85 | <NODE_1_PRIVATE_IP> | None | us-east-1a |
+| node-2 | i-0b2c3d4e5f6789a1b | t3.small | ami-0b75f821522bcff85 | <NODE_2_PRIVATE_IP> | None | us-east-1a |
 
 **AMI Details**:
 - ID: `ami-0b75f821522bcff85`
@@ -75,7 +75,7 @@
 | Resource | Details |
 |----------|---------|
 | Instance Profile | Default EC2 role with basic permissions |
-| Key Pair | `ani-key` (RSA 2048-bit, .pem format) |
+| Key Pair | `<YOUR_KEY_PAIR>` (RSA 2048-bit, .pem format) |
 
 ---
 

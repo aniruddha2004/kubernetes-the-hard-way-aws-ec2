@@ -66,9 +66,9 @@ Before starting, ensure:
 
 | Property | Value |
 |----------|-------|
-| Control Plane IP | `172.31.20.244` |
-| Worker Node 1 IP | `172.31.19.88` |
-| Worker Node 2 IP | `172.31.25.215` |
+| Control Plane IP | `<SERVER_PRIVATE_IP>` |
+| Worker Node 1 IP | `<NODE_1_PRIVATE_IP>` |
+| Worker Node 2 IP | `<NODE_2_PRIVATE_IP>` |
 | Service CIDR | `10.32.0.0/24` |
 | Pod CIDR (node-1) | `10.200.0.0/24` |
 | Pod CIDR (node-2) | `10.200.1.0/24` |
@@ -178,7 +178,7 @@ Documentation=https://github.com/kubernetes/kubernetes
 
 [Service]
 ExecStart=/usr/local/bin/kube-apiserver \
-  --advertise-address=172.31.20.244 \
+  --advertise-address=<SERVER_PRIVATE_IP> \
   --allow-privileged=true \
   --apiserver-count=1 \
   --audit-log-maxage=30 \
@@ -220,7 +220,7 @@ EOF
 
 | Flag | Purpose |
 |------|---------|
-| `--advertise-address=172.31.20.244` | The IP other cluster members should use to reach this API server |
+| `--advertise-address=<SERVER_PRIVATE_IP>` | The IP other cluster members should use to reach this API server |
 | `--allow-privileged=true` | Allow privileged containers (needed for some CNI and system pods) |
 | `--authorization-mode=Node,RBAC` | Enable both Node authorizer and RBAC for access control |
 | `--bind-address=0.0.0.0` | Listen on all interfaces (needed for remote kubectl access) |
@@ -430,7 +430,7 @@ Expected output:
      Memory: 256.3M
         CPU: 1.234s
      CGroup: /system.slice/kube-apiserver.service
-             └─5678 /usr/local/bin/kube-apiserver --advertise-address=172.31.20.244 --allow-privileged=true ...
+             └─5678 /usr/local/bin/kube-apiserver --advertise-address=<SERVER_PRIVATE_IP> --allow-privileged=true ...
 ```
 
 #### kube-controller-manager
@@ -661,7 +661,7 @@ During setup, a real error was encountered when trying to connect to the API ser
 
 ### The Error Encountered
 
-Initially, the hostname `server.ani-kubernetes.local` was used in `/etc/hosts` and in kubeconfig files. However, the API server certificate was generated with `server.kubernetes.local` as a Subject Alternative Name (SAN), not `server.ani-kubernetes.local`.
+Initially, the hostname `server.custom-kubernetes.local` was used in `/etc/hosts` and in kubeconfig files. However, the API server certificate was generated with `server.kubernetes.local` as a Subject Alternative Name (SAN), not `server.custom-kubernetes.local`.
 
 When running any `kubectl` command:
 
@@ -671,24 +671,24 @@ kubectl get nodes --kubeconfig admin.kubeconfig
 
 The following error appeared:
 ```
-Unable to connect to the server: x509: certificate is valid for server.kubernetes.local, kubernetes, kubernetes.default, kubernetes.default.svc, kubernetes.default.svc.cluster, kubernetes.default.svc.cluster.local, 10.32.0.1, 172.31.20.244, not server.ani-kubernetes.local
+Unable to connect to the server: x509: certificate is valid for server.kubernetes.local, kubernetes, kubernetes.default, kubernetes.default.svc, kubernetes.default.svc.cluster, kubernetes.default.svc.cluster.local, 10.32.0.1, <SERVER_PRIVATE_IP>, not server.custom-kubernetes.local
 ```
 
 ### Root Cause
 
-The kubeconfig's `server` field pointed to `https://server.ani-kubernetes.local:6443`, but the API server's TLS certificate did not include `server.ani-kubernetes.local` in its SAN list. TLS hostname verification failed because the name used to connect did not match any name the certificate claimed to represent.
+The kubeconfig's `server` field pointed to `https://server.custom-kubernetes.local:6443`, but the API server's TLS certificate did not include `server.custom-kubernetes.local` in its SAN list. TLS hostname verification failed because the name used to connect did not match any name the certificate claimed to represent.
 
 ### The Fix
 
 Two options exist:
 
 **Option 1: Regenerate the API Server Certificate (Complex)**
-- Regenerate `kubernetes.crt` with `server.ani-kubernetes.local` added to the SAN list
+- Regenerate `kubernetes.crt` with `server.custom-kubernetes.local` added to the SAN list
 - Redistribute the certificate to all nodes
 - This is more work but preserves the desired hostname
 
 **Option 2: Use the SAN That Exists in the Certificate (Simple)**
-- Update `/etc/hosts` to map `server.kubernetes.local` to `172.31.20.244`
+- Update `/etc/hosts` to map `server.kubernetes.local` to `<SERVER_PRIVATE_IP>`
 - Update all kubeconfigs to use `https://server.kubernetes.local:6443`
 - This is what was done in this tutorial
 
@@ -713,7 +713,7 @@ ssh jumpbox "grep server.kubernetes.local /etc/hosts"
 
 Expected:
 ```
-172.31.20.244 server.kubernetes.local
+<SERVER_PRIVATE_IP> server.kubernetes.local
 ```
 
 Also verify on the server node itself:
@@ -724,7 +724,7 @@ ssh server "grep server.kubernetes.local /etc/hosts"
 
 Expected:
 ```
-172.31.20.244 server.kubernetes.local
+<SERVER_PRIVATE_IP> server.kubernetes.local
 ```
 
 ### Confirm API Server Certificate SANs
@@ -738,14 +738,14 @@ openssl x509 -in kube-api-server/kubernetes.crt -text -noout | grep -A 10 "Subje
 Expected output:
 ```
             X509v3 Subject Alternative Name:
-                DNS:kubernetes, DNS:kubernetes.default, DNS:kubernetes.default.svc, DNS:kubernetes.default.svc.cluster, DNS:kubernetes.default.svc.cluster.local, DNS:server.kubernetes.local, IP Address:10.32.0.1, IP Address:172.31.20.244
+                DNS:kubernetes, DNS:kubernetes.default, DNS:kubernetes.default.svc, DNS:kubernetes.default.svc.cluster, DNS:kubernetes.default.svc.cluster.local, DNS:server.kubernetes.local, IP Address:10.32.0.1, IP Address:<SERVER_PRIVATE_IP>
 ```
 
 > **Lesson**: When generating certificates, include **ALL hostnames and IPs** that will ever be used to connect to the API server in the SAN list. This includes:
 > - Human-friendly DNS names (`server.kubernetes.local`)
 > - Kubernetes internal service names (`kubernetes.default.svc.cluster.local`)
 > - Service cluster IP (`10.32.0.1` — the `kubernetes` service IP)
-> - Physical node IP (`172.31.20.244`)
+> - Physical node IP (`<SERVER_PRIVATE_IP>`)
 
 ### Test kubectl Connectivity
 

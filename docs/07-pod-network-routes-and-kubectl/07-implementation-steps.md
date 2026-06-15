@@ -101,7 +101,7 @@ On each worker node, add routes pointing to the other worker nodes.
 Add a route to node-2's pod CIDR through node-2's private IP:
 
 ```bash
-ssh node-1 "sudo ip route add 10.200.1.0/24 via 172.31.25.215"
+ssh node-1 "sudo ip route add 10.200.1.0/24 via <NODE_2_PRIVATE_IP>"
 ```
 
 Verify:
@@ -112,9 +112,9 @@ ssh node-1 "ip route"
 Expected output:
 ```
 default via 172.31.16.1 dev eth0
-172.31.16.0/20 dev eth0 proto kernel scope link src 172.31.19.88
+172.31.16.0/20 dev eth0 proto kernel scope link src <NODE_1_PRIVATE_IP>
 10.200.0.0/24 dev cni0 proto kernel scope link src 10.200.0.1
-10.200.1.0/24 via 172.31.25.215 dev eth0
+10.200.1.0/24 via <NODE_2_PRIVATE_IP> dev eth0
 ```
 
 ### On node-2
@@ -122,7 +122,7 @@ default via 172.31.16.1 dev eth0
 Add a route to node-1's pod CIDR through node-1's private IP:
 
 ```bash
-ssh node-2 "sudo ip route add 10.200.0.0/24 via 172.31.19.88"
+ssh node-2 "sudo ip route add 10.200.0.0/24 via <NODE_1_PRIVATE_IP>"
 ```
 
 Verify:
@@ -133,9 +133,9 @@ ssh node-2 "ip route"
 Expected output:
 ```
 default via 172.31.16.1 dev eth0
-172.31.16.0/20 dev eth0 proto kernel scope link src 172.31.25.215
+172.31.16.0/20 dev eth0 proto kernel scope link src <NODE_2_PRIVATE_IP>
 10.200.1.0/24 dev cni0 proto kernel scope link src 10.200.1.1
-10.200.0.0/24 via 172.31.19.88 dev eth0
+10.200.0.0/24 via <NODE_1_PRIVATE_IP> dev eth0
 ```
 
 ### On the Control Plane (server)
@@ -143,8 +143,8 @@ default via 172.31.16.1 dev eth0
 For kubectl exec/logs/port-forward to work properly, the control plane also needs routes:
 
 ```bash
-ssh server "sudo ip route add 10.200.0.0/24 via 172.31.19.88"
-ssh server "sudo ip route add 10.200.1.0/24 via 172.31.25.215"
+ssh server "sudo ip route add 10.200.0.0/24 via <NODE_1_PRIVATE_IP>"
+ssh server "sudo ip route add 10.200.1.0/24 via <NODE_2_PRIVATE_IP>"
 ```
 
 ### Make Routes Persistent (Optional)
@@ -154,8 +154,8 @@ Routes added with `ip route` disappear on reboot. To persist them:
 Create a systemd service or add to network configuration. For Debian:
 
 ```bash
-ssh node-1 "echo 'up ip route add 10.200.1.0/24 via 172.31.25.215' | sudo tee -a /etc/network/interfaces"
-ssh node-2 "echo 'up ip route add 10.200.0.0/24 via 172.31.19.88' | sudo tee -a /etc/network/interfaces"
+ssh node-1 "echo 'up ip route add 10.200.1.0/24 via <NODE_2_PRIVATE_IP>' | sudo tee -a /etc/network/interfaces"
+ssh node-2 "echo 'up ip route add 10.200.0.0/24 via <NODE_1_PRIVATE_IP>' | sudo tee -a /etc/network/interfaces"
 ```
 
 Or use a simple systemd oneshot service:
@@ -168,7 +168,7 @@ After=network.target
 
 [Service]
 Type=oneshot
-ExecStart=/sbin/ip route add 10.200.1.0/24 via 172.31.25.215
+ExecStart=/sbin/ip route add 10.200.1.0/24 via <NODE_2_PRIVATE_IP>
 RemainAfterExit=yes
 
 [Install]
@@ -307,8 +307,8 @@ kubectl get nodes -o wide
 Expected:
 ```
 NAME     STATUS   ROLES    AGE   VERSION   INTERNAL-IP    OS-IMAGE
-node-1   Ready    <none>   10m   v1.32.3   172.31.19.88   Debian GNU/Linux 12
-node-2   Ready    <none>   10m   v1.32.3   172.31.25.215  Debian GNU/Linux 12
+node-1   Ready    <none>   10m   v1.32.3   <NODE_1_PRIVATE_IP>   Debian GNU/Linux 12
+node-2   Ready    <none>   10m   v1.32.3   <NODE_2_PRIVATE_IP>  Debian GNU/Linux 12
 ```
 
 ### Check System Pods
@@ -344,8 +344,8 @@ At the end of Step 7, confirm:
 
 | Check | Command | Expected |
 |-------|---------|----------|
-| Route on node-1 | `ssh node-1 "ip route \| grep 10.200.1"` | `10.200.1.0/24 via 172.31.25.215` |
-| Route on node-2 | `ssh node-2 "ip route \| grep 10.200.0"` | `10.200.0.0/24 via 172.31.19.88` |
+| Route on node-1 | `ssh node-1 "ip route \| grep 10.200.1"` | `10.200.1.0/24 via <NODE_2_PRIVATE_IP>` |
+| Route on node-2 | `ssh node-2 "ip route \| grep 10.200.0"` | `10.200.0.0/24 via <NODE_1_PRIVATE_IP>` |
 | Pod-to-pod ping | `kubectl exec pod-a -- ping pod-b-ip` | 0% packet loss |
 | kubectl works | `kubectl get nodes` | Shows both nodes |
 | Nodes Ready | `kubectl get nodes` | STATUS = Ready |

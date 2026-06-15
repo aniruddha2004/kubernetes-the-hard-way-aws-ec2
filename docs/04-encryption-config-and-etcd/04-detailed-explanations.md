@@ -619,8 +619,8 @@ Same as client flags but for peer-to-peer communication between etcd members.
 ### Network Flags
 
 ```
---listen-client-urls https://172.31.20.244:2379,https://127.0.0.1:2379
---advertise-client-urls https://172.31.20.244:2379
+--listen-client-urls https://<SERVER_PRIVATE_IP>:2379,https://127.0.0.1:2379
+--advertise-client-urls https://<SERVER_PRIVATE_IP>:2379
 ```
 
 - `--listen-client-urls` — Interfaces and ports to bind
@@ -630,8 +630,8 @@ Same as client flags but for peer-to-peer communication between etcd members.
   - Other clients use this to connect
 
 ```
---listen-peer-urls https://172.31.20.244:2380
---initial-advertise-peer-urls https://172.31.20.244:2380
+--listen-peer-urls https://<SERVER_PRIVATE_IP>:2380
+--initial-advertise-peer-urls https://<SERVER_PRIVATE_IP>:2380
 ```
 
 Same pattern for peer communication.
@@ -640,7 +640,7 @@ Same pattern for peer communication.
 
 ```
 --initial-cluster-token etcd-cluster-0
---initial-cluster server=https://172.31.20.244:2380
+--initial-cluster server=https://<SERVER_PRIVATE_IP>:2380
 --initial-cluster-state new
 ```
 
@@ -763,14 +763,14 @@ When you run `etcdctl member list`, here's what happens:
 
 Example:
 ```
-8e9e05c52164694d, started, server, https://172.31.20.244:2380, https://172.31.20.244:2379
+8e9e05c52164694d, started, server, https://<SERVER_PRIVATE_IP>:2380, https://<SERVER_PRIVATE_IP>:2379
 ```
 
 - `8e9e05c52164694d` — Unique 64-bit hex member ID (hashed from peer URLs)
 - `started` — Member is active
 - `server` — Name from `--name` flag
-- `https://172.31.20.244:2380` — Where peers connect
-- `https://172.31.20.244:2379` — Where clients connect
+- `https://<SERVER_PRIVATE_IP>:2380` — Where peers connect
+- `https://<SERVER_PRIVATE_IP>:2379` — Where clients connect
 
 ---
 

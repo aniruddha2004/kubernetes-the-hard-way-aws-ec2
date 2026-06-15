@@ -34,12 +34,12 @@ Your Laptop (Internet)
        |
        | SSH (Port 22)
        v
-  Jumpbox (Public IP: 32.199.185.61)
+  Jumpbox (Public IP: <JUMPBOX_PUBLIC_IP>)
        |
        | Internal Network
-       +-----> server (172.31.20.244)
-       +-----> node-1 (172.31.19.88)
-       +-----> node-2 (172.31.25.215)
+       +-----> server (<SERVER_PRIVATE_IP>)
+       +-----> node-1 (<NODE_1_PRIVATE_IP>)
+       +-----> node-2 (<NODE_2_PRIVATE_IP>)
 ```
 
 ### Benefits of Using a Jumpbox
@@ -142,20 +142,20 @@ Throughout this guide, we use SSH to:
 
 Instead of typing long commands like:
 ```bash
-ssh -i ~/.ssh/ani-key.pem admin@172.31.20.244
+ssh -i ~/.ssh/<YOUR_KEY_PAIR>.pem admin@<SERVER_PRIVATE_IP>
 ```
 
 We create a config file that maps short names to full connection details:
 ```bash
-ssh server   # Expands to: ssh admin@172.31.20.244 -i ~/.ssh/ani-key.pem
-ssh node-1   # Expands to: ssh admin@172.31.19.88 -i ~/.ssh/ani-key.pem
+ssh server   # Expands to: ssh admin@<SERVER_PRIVATE_IP> -i ~/.ssh/<YOUR_KEY_PAIR>.pem
+ssh node-1   # Expands to: ssh admin@<NODE_1_PRIVATE_IP> -i ~/.ssh/<YOUR_KEY_PAIR>.pem
 ```
 
 ### Why chmod 600?
 
 SSH requires strict permissions on config files:
 - `~/.ssh/config` must be `600` (owner read/write only)
-- `~/.ssh/ani-key.pem` must be `400` (owner read only)
+- `~/.ssh/<YOUR_KEY_PAIR>.pem` must be `400` (owner read only)
 
 This prevents other users on the system from reading your private key or connection details.
 
@@ -197,7 +197,7 @@ When Kubernetes components connect to each other, they use **TLS certificates** 
 1. Client connects to server
 2. Server presents its certificate
 3. Client checks: "Does the hostname I'm connecting to match the hostname in the certificate?"
-4. If NO → Connection refused with error like: `x509: certificate is valid for server.kubernetes.local, not server.ani-kubernetes.local`
+4. If NO → Connection refused with error like: `x509: certificate is valid for server.kubernetes.local, not server.custom-kubernetes.local`
 
 ### What We Configure
 
@@ -360,9 +360,9 @@ A: **Container Runtime Interface** — a standardized API that Kubernetes uses t
 
 **Solution**:
 ```bash
-chmod 400 ani-key.pem
+chmod 400 <YOUR_KEY_PAIR>.pem
 # Verify user exists:
-ssh -i ani-key.pem admin@<ip> "whoami"
+ssh -i <YOUR_KEY_PAIR>.pem admin@<ip> "whoami"
 ```
 
 ### Issue: "Could not resolve hostname server"

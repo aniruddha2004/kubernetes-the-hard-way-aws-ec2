@@ -422,8 +422,8 @@ Unable to register node with API server" err="Post \"https://server.kubernetes.l
 **Fix**: Add the API server's hostname to `/etc/hosts` on **each worker node**:
 
 ```bash
-ssh node-1 "echo '172.31.20.244 server.kubernetes.local server' | sudo tee -a /etc/hosts"
-ssh node-2 "echo '172.31.20.244 server.kubernetes.local server' | sudo tee -a /etc/hosts"
+ssh node-1 "echo '<SERVER_PRIVATE_IP> server.kubernetes.local server' | sudo tee -a /etc/hosts"
+ssh node-2 "echo '<SERVER_PRIVATE_IP> server.kubernetes.local server' | sudo tee -a /etc/hosts"
 ```
 
 Then restart kubelet on each node:

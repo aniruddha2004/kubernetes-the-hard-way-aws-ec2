@@ -194,13 +194,13 @@ The API server is accessed by many different names:
 2. **Inside pods with namespace** — `https://kubernetes.default`
 3. **Full service DNS** — `https://kubernetes.default.svc.cluster.local`
 4. **Direct hostname** — `https://server.kubernetes.local`
-5. **Direct IP** — `https://172.31.20.244`
+5. **Direct IP** — `https://<SERVER_PRIVATE_IP>`
 6. **Service IP** — `https://10.32.0.1` (the kubernetes service)
 
 If the API server certificate lacks ANY of these SANs, connections using that name will fail with:
 ```
 x509: certificate is valid for kubernetes, kubernetes.default, ...
-not server.ani-kubernetes.local
+not server.custom-kubernetes.local
 ```
 
 ### The `10.32.0.1` IP

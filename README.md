@@ -84,7 +84,7 @@ This separation lets you follow the commands when setting up the cluster, and re
 
 | Part | Topic | Implementation | Explanations |
 |------|-------|----------------|--------------|
-| Part 1 | Prerequisites & Infrastructure Setup | [`01-implementation-steps.md`](docs/01-prerequisites-and-infrastructure/01-implementation-steps.md) | [`02-detailed-explanations.md`](docs/01-prerequisites-and-infrastructure/02-detailed-explanations.md) |
+| Part 1 | Prerequisites & Infrastructure Setup | [`01-implementation-steps.md`](docs/01-prerequisites-and-infrastructure/01-implementation-steps.md) | [`01-detailed-explanations.md`](docs/01-prerequisites-and-infrastructure/01-detailed-explanations.md) |
 | Part 2 | PKI and Certificate Authority | [`02-implementation-steps.md`](docs/02-pki-and-certificate-authority/02-implementation-steps.md) | [`02-detailed-explanations.md`](docs/02-pki-and-certificate-authority/02-detailed-explanations.md) |
 | Part 3 | Kubeconfigs and Authentication | [`03-implementation-steps.md`](docs/03-kubeconfigs-and-authentication/03-implementation-steps.md) | [`03-detailed-explanations.md`](docs/03-kubeconfigs-and-authentication/03-detailed-explanations.md) |
 | Part 4 | Encryption Config and etcd Bootstrap | [`04-implementation-steps.md`](docs/04-encryption-config-and-etcd/04-implementation-steps.md) | [`04-detailed-explanations.md`](docs/04-encryption-config-and-etcd/04-detailed-explanations.md) |

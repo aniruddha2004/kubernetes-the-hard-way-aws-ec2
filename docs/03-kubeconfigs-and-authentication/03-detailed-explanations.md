@@ -190,7 +190,7 @@ CLIENT                                    SERVER
   |    [Client verifies cert]                |
   |    "Yes, this server is legitimate"      |
   |                                          |
-  |======== ENCRYPTED CHANNEL ==============|
+  |=========== ENCRYPTED CHANNEL ============|
   |                                          |
   |-------- 3. "Here are my credentials" --->|
   |    [Username/password/API key]           |
@@ -212,7 +212,7 @@ CLIENT                                    SERVER
   |    [BOTH verify each other's certs]      |
   |    "We both trust the same CA"           |
   |                                          |
-  |======== ENCRYPTED CHANNEL ==============|
+  |========== ENCRYPTED CHANNEL ===========|
   |    [No additional credentials needed]    |
 ```
 
@@ -321,15 +321,15 @@ Different components may have different certificate renewal schedules. Separate 
 
 ```
 +--------+     mTLS      +-----------------+     mTLS      +--------+
-| kubelet|=============>| kube-apiserver  |=============>|  etcd  |
+| kubelet|==============>| kube-apiserver  |==============>|  etcd  |
 | node-1 |               |                 |               |        |
 |        | CN=system:    | validates       | CN=kube-      |        |
 |        | node:node-1   | node identity   | apiserver     |        |
 +--------+               +-----------------+               +--------+
      |                         |
      | POST /api/v1/nodes      |
-     | "I'm node-1, here's    |
-     |  my status"             |
+     | "I'm node-1, here's my  |
+     |  status"                |
      |                         |
      |<----- 201 Created ------|
      | "Welcome to the cluster"|
@@ -341,7 +341,7 @@ Different components may have different certificate renewal schedules. Separate 
 
 ```
 +-------------------+     mTLS      +-----------------+
-| kube-controller   |=============>| kube-apiserver  |
+| kube-controller   |==============>| kube-apiserver  |
 | -manager          |               |                 |
 |                   | CN=system:    | validates       |
 |                   | kube-controller| controller     |
@@ -363,7 +363,7 @@ Different components may have different certificate renewal schedules. Separate 
 
 ```
 +-------------------+     mTLS      +-----------------+
-| kube-scheduler    |=============>| kube-apiserver  |
+| kube-scheduler    |==============>| kube-apiserver  |
 |                   |               |                 |
 |                   | CN=system:    | validates       |
 |                   | kube-scheduler| scheduler       |
@@ -404,7 +404,7 @@ While mTLS is for system components, **service accounts** use JWT tokens for in-
      |                                     |
      | 2. API request with token           |
      |    Authorization: Bearer eyJhbG...  |
-     |---------------------------->|
+     |------------------------------------>|
      |                                     |
      |                                     | 3. Verify JWT signature
      |                                     |    using service-account.pub
@@ -414,7 +414,7 @@ While mTLS is for system components, **service accounts** use JWT tokens for in-
      |                                     |
      |                                     | 5. RBAC check
      |                                     |
-     |<----- Response --------------------|
+     |<------------- Response -------------|
 ```
 
 ### Token Structure (JWT)
